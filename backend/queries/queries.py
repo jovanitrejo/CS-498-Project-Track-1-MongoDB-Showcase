@@ -1,6 +1,6 @@
 from pymongo.asynchronous.collection import AsyncCollection
 from typing import List
-from models.rest_response_models import TopCountryResponse, UserTweetCountsResponse
+from models.rest_response_models import TopCountryResponse, UserTweetCountsResponse, TopHashtagsResponse
 
 async def query_top_countries(tweets_collection: AsyncCollection) -> List[TopCountryResponse]:
     """
@@ -79,3 +79,48 @@ async def query_most_active_users(tweets_collection: AsyncCollection) -> List[Us
         raise e
     
     return active_users
+
+async def query_top_hashtags(tweets_collection: AsyncCollection) -> List[TopHashtagsResponse]:
+    """
+    Query to get a sorted list of the most used hashtags, along with their counts.
+    """
+    pipeline = [
+        {
+            "$unwind": "$entities.hashtags"
+        },
+        {
+            "addFields": {
+                "hashtag": {
+                    "$toLower": "$entities.hashtags"
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": "$hashtag",
+                "count": {"$sum": 1}
+            }
+        },
+        {
+            "$limt": 100
+        },
+        {
+            "$sort": {"count": -1}
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "hashtag": "$_id",
+                "count": 1
+            }
+        }
+    ]
+
+    try:
+        response = await tweets_collection.aggregate(pipeline)
+        top_hashtags = [TopHashtagsResponse(**doc) async for doc in response]
+    except Exception as e:
+        print(f"Error occurred while querying top hashtags: {e}")
+        raise e
+    
+    return top_hashtags

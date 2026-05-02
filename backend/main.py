@@ -2,8 +2,8 @@ from typing import Any, List
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 
-from models.rest_response_models import TopCountryResponse, UserTweetCountsResponse
-from queries.queries import query_most_active_users, query_top_countries
+from models.rest_response_models import TopCountryResponse, UserTweetCountsResponse, TopHashtagsResponse
+from queries.queries import query_most_active_users, query_top_countries, query_top_hashtags
 from dotenv import load_dotenv
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
@@ -64,3 +64,16 @@ async def get_most_active_users() -> List[UserTweetCountsResponse] | dict[str, s
         print(f"Error occurred while getting most active users: {e}")
         return {"error": "An error occurred while fetching most active users.", "details": str(e)}
     return most_active_users
+
+@app.get("/top-hashtags", response_model=List[TopHashtagsResponse])
+async def get_top_hashtags() -> List[TopHashtagsResponse] | dict[str, str]:
+    """
+    Endpoint to get a sorted list of the most popular hashtags, along with their counts.
+    """
+    tweets_collection: AsyncCollection = app.state.tweets
+    try:
+        top_hashtags = await query_top_hashtags(tweets_collection)
+    except Exception as e:
+        print(f"Error occurred while getting top hashtags: {e}")
+        return {"error": "An error occurred while fetching top hashtags.", "details": str(e)}
+    return top_hashtags
