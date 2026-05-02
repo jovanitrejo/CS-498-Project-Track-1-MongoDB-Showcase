@@ -1,6 +1,6 @@
 from pymongo.asynchronous.collection import AsyncCollection
 from typing import List
-from models.rest_response_models import TopCountryResponse
+from models.rest_response_models import TopCountryResponse, UserTweetCountsResponse
 
 async def query_top_countries(tweets_collection: AsyncCollection) -> List[TopCountryResponse]:
     """
@@ -41,3 +41,41 @@ async def query_top_countries(tweets_collection: AsyncCollection) -> List[TopCou
         raise e
 
     return top_countries
+
+async def query_most_active_users(tweets_collection: AsyncCollection) -> List[UserTweetCountsResponse]:
+    """
+    Query to get a sorted list of users with the most tweets, along with their counts.
+    """
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$user.id",
+                "user_name": {"$first": "$user.name"},
+                "screen_name": {"$first": "$user.screen_name"},
+                "tweet_count": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"tweet_count": -1}
+        },
+        {
+            "$limit": 50
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "user_id": "$_id",
+                "user_name": 1,
+                "screen_name": 1,
+                "tweet_count": 1
+            }
+        }
+    ]
+    try:
+        response = await tweets_collection.aggregate(pipeline)
+        active_users = [UserTweetCountsResponse(**doc) async for doc in response]
+    except Exception as e:
+        print(f"Error occurred while querying most active users: {e}")
+        raise e
+    
+    return active_users

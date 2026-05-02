@@ -2,8 +2,8 @@ from typing import Any, List
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 
-from models.rest_response_models import TopCountryResponse
-from queries.queries import query_top_countries
+from models.rest_response_models import TopCountryResponse, UserTweetCountsResponse
+from queries.queries import query_most_active_users, query_top_countries
 from dotenv import load_dotenv
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
@@ -40,10 +40,27 @@ async def read_root():
     return {"Hello": "World"}
 
 @app.get("/top-countries", response_model=List[TopCountryResponse])
-async def get_top_countries() -> List[TopCountryResponse]:
+async def get_top_countries() -> List[TopCountryResponse] | dict[str, str]:
     """
     Endpoint to get a sorted list of countries with the most tweets, along with their counts.
     """
     tweets_collection: AsyncCollection = app.state.tweets
-    top_countries = await query_top_countries(tweets_collection)
+    try:
+        top_countries = await query_top_countries(tweets_collection)
+    except Exception as e:
+        print(f"Error occurred while getting top countries: {e}")
+        return {"error": "An error occurred while fetching top countries.", "details": str(e)}
     return top_countries
+
+@app.get("/most-active-users", response_model=List[UserTweetCountsResponse])
+async def get_most_active_users() -> List[UserTweetCountsResponse] | dict[str, str]:
+    """
+    Endpoint to get a sorted list of users with the most tweets, along with their counts.
+    """
+    tweets_collection: AsyncCollection = app.state.tweets
+    try:
+        most_active_users = await query_most_active_users(tweets_collection)
+    except Exception as e:
+        print(f"Error occurred while getting most active users: {e}")
+        return {"error": "An error occurred while fetching most active users.", "details": str(e)}
+    return most_active_users
