@@ -2,8 +2,8 @@ from typing import Any, List
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 
-from models.rest_response_models import TopCountryResponse, UserTweetCountsResponse, TopHashtagsResponse
-from queries.queries import query_most_active_users, query_top_countries, query_top_hashtags
+from models.rest_response_models import EngagementBreakdownResponse, EngagementBreakdownResponse, TopCountryResponse, UserTweetCountsResponse, TopHashtagsResponse
+from queries.queries import query_engagement_breakdown, query_most_active_users, query_top_countries, query_top_hashtags
 from dotenv import load_dotenv
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
@@ -77,3 +77,16 @@ async def get_top_hashtags() -> List[TopHashtagsResponse] | dict[str, str]:
         print(f"Error occurred while getting top hashtags: {e}")
         return {"error": "An error occurred while fetching top hashtags.", "details": str(e)}
     return top_hashtags
+
+@app.get("/engagement-breakdown", response_model=List[EngagementBreakdownResponse])
+async def get_engagement_breakdown() -> List[EngagementBreakdownResponse] | dict[str, str]:
+    """
+    Endpoint to get a breakdown of engagement types (simple, retweet, quote, reply) for each user, along with their percentages.
+    """
+    tweets_collection: AsyncCollection = app.state.tweets
+    try:
+        engagement_breakdown = await query_engagement_breakdown(tweets_collection)
+    except Exception as e:
+        print(f"Error occurred while getting engagement breakdown: {e}")
+        return {"error": "An error occurred while fetching engagement breakdown.", "details": str(e)}
+    return engagement_breakdown
