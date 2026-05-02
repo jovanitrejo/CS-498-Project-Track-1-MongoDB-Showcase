@@ -102,10 +102,10 @@ async def query_top_hashtags(tweets_collection: AsyncCollection) -> List[TopHash
             }
         },
         {
-            "$limit": 100
+            "$sort": {"count": -1}
         },
         {
-            "$sort": {"count": -1}
+            "$limit": 100
         },
         {
             "$project": {
