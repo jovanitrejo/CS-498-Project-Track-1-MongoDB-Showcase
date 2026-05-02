@@ -1,23 +1,25 @@
-from pymongo import MongoClient
+from pymongo import AsyncMongoClient, MongoClient
 from dotenv import load_dotenv
 import os
+import asyncio
 
 load_dotenv()
-def test_connection():
+async def test_connection():
     """
     This python file tests to check if the MONGODB_CONN env variable is set correctly and can be used to connect to the custom GCP MongoDB instance.
     """
     uri: str | None = os.getenv("MONGO_URI")
     if uri is None:
         raise ValueError("MONGO_URI environment variable is not set")
-    client: MongoClient = MongoClient(uri)
+    print(f"Testing connection to MongoDB....")
+    client: AsyncMongoClient = AsyncMongoClient(uri)
     try:
-        client.admin.command('ping')
+        await client.server_info()
         print("Successfully connected!")
     except Exception as e:
         print(f"Connection failed: {e}")
     finally:
-        client.close()
+        await client.close()
 
 if __name__ == "__main__":
-    test_connection()
+    asyncio.run(test_connection())
