@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 
+load_dotenv()
 def test_connection():
     """
     This python file tests to check if the MONGODB_CONN env variable is set correctly and can be used to connect to the custom GCP MongoDB instance.
@@ -17,3 +18,6 @@ def test_connection():
         print(f"Connection failed: {e}")
     finally:
         client.close()
+
+if __name__ == "__main__":
+    test_connection()
