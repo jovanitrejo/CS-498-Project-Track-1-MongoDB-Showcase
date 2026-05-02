@@ -89,9 +89,9 @@ async def query_top_hashtags(tweets_collection: AsyncCollection) -> List[TopHash
             "$unwind": "$entities.hashtags"
         },
         {
-            "addFields": {
+            "$addFields": {
                 "hashtag": {
-                    "$toLower": "$entities.hashtags"
+                    "$toLower": "$entities.hashtags.text"
                 }
             }
         },
@@ -102,7 +102,7 @@ async def query_top_hashtags(tweets_collection: AsyncCollection) -> List[TopHash
             }
         },
         {
-            "$limt": 100
+            "$limit": 100
         },
         {
             "$sort": {"count": -1}
