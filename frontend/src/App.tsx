@@ -1,10 +1,26 @@
 import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router";
 
 const App = (): React.JSX.Element => {
   return (
-    <div className="App">
-      <p>Hello, Vite + React!</p>
-    </div>
+    <BrowserRouter>
+      <div className="app-shell">
+        {/* Input NavBar Here */}
+        <main className="app-content">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div>
+                  <p>Home!</p>
+                </div>
+              }
+            />
+          </Routes>
+        </main>
+        {/* Input footer here! */}
+      </div>
+    </BrowserRouter>
   );
 };
 
