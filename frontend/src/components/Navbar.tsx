@@ -6,8 +6,8 @@ import { Link } from "react-router";
 
 const Navbar = (): React.JSX.Element => {
   return (
-    <ReactBootstrapNavbar expand="lg" bg="light">
-      <Container>
+    <ReactBootstrapNavbar expand="md" bg="light">
+      <Container fluid>
         <ReactBootstrapNavbar.Brand href="#home">
           CS 498: Data Management in The Cloud
         </ReactBootstrapNavbar.Brand>
