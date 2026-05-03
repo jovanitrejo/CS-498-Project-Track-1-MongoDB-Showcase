@@ -1,11 +1,13 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 const App = (): React.JSX.Element => {
   return (
     <BrowserRouter>
       <div className="app-shell">
-        {/* Input NavBar Here */}
+        <Navbar />
         <main className="app-content">
           <Routes>
             <Route
@@ -18,7 +20,7 @@ const App = (): React.JSX.Element => {
             />
           </Routes>
         </main>
-        {/* Input footer here! */}
+        <Footer />
       </div>
     </BrowserRouter>
   );
