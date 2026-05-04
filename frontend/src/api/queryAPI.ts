@@ -1,6 +1,7 @@
 import axios, { type AxiosResponse } from "axios";
 import type EngagementBreakdownResponse from "../models/engagementBreakdown";
 import type ActiveUserResponse from "../models/activeUserResponse";
+import type Hashtag from "../models/topHashtags";
 import type TopCountry from "../models/topCountry";
 
 /**
@@ -27,7 +28,7 @@ export const getEngagementBreakdown = async (): Promise<
 export const getMostActiveUsers = async (): Promise<ActiveUserResponse[]> => {
   try {
     const response: AxiosResponse<ActiveUserResponse[]> =
-      await axios.get("/active-users");
+      await axios.get("/most-active-users");
     return response.data;
   } catch (error) {
     console.error("Error fetching most active users!", { cause: error });
@@ -54,9 +55,9 @@ export const getTopCountries = async (): Promise<TopCountry[]> => {
  * Contacts backend API to retrieve the top hashtags by count in the dataset. This function makes a GET request to the `/top-hashtags` endpoint and returns the data as an array of Hashtag objects.
  * @returns An array of Hashtag objects, which represent the top hashtags by count in the dataset.
  */
-export const getTopHashtags = async (): Promise<TopCountry[]> => {
+export const getTopHashtags = async (): Promise<Hashtag[]> => {
   try {
-    const response: AxiosResponse<TopCountry[]> =
+    const response: AxiosResponse<Hashtag[]> =
       await axios.get("/top-hashtags");
     return response.data;
   } catch (error) {
