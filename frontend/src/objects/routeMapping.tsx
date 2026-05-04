@@ -2,6 +2,8 @@ import type RouteProps from "../models/routeProps"
 import EngagementBreakdown from "../routes/EngagementBreakdown"
 import MostActiveUsers from '../routes/MostActiveUsers';
 import Home from "../routes/Home";
+import TopCountries from "../routes/TopCountries";
+import TopHashtags from "../routes/TopHashtags";
 
 /**
  * This file contains a RouteProp[] object which will be used to map to the 
@@ -19,5 +21,13 @@ export default [
     {
         path: "/",
         element: <Home />
+    },
+    {
+        path: "/top-countries",
+        element: <TopCountries />
+    },
+    {
+        path: "/top-hashtags",
+        element: <TopHashtags />
     }
 ] as RouteProps[]
