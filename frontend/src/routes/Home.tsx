@@ -7,6 +7,10 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
+/**
+ * This component is used to render all of the advanced query options for this project.
+ * @returns A JSX Element to be rendered on the DOM.
+ */
 const Home = (): React.JSX.Element => {
   return (
     <Container className="py-4">
