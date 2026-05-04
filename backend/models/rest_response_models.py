@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class TopCountryResponse(BaseModel):
     country: str
@@ -22,3 +23,14 @@ class EngagementBreakdownResponse(BaseModel):
     retweet_percent: float
     quote_percent: float
     reply_percent: float
+
+class TweetResponse(BaseModel):
+    id: int
+    screen_name: str
+    verified: bool
+    created_at: datetime
+    text: str
+    likes: int
+    retweets: int
+    quotes: int
+    favorites: int
