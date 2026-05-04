@@ -2,17 +2,19 @@ import os
 from typing import Any, List
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import asynccontextmanager
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.asynchronous.database import AsyncDatabase
 from fastapi.middleware.cors import CORSMiddleware
 
+from models.mongodb_models import Tweet
 from models.rest_response_models import (
     EngagementBreakdownResponse,
     TopCountryResponse,
     TopHashtagsResponse,
+    TweetResponse,
     UserTweetCountsResponse,
 )
 from queries.queries import (
@@ -20,6 +22,7 @@ from queries.queries import (
     query_most_active_users,
     query_top_countries,
     query_top_hashtags,
+    get_tweets_by_screen_name
 )
 
 load_dotenv()  # load environment variables from .env file
@@ -131,3 +134,26 @@ async def get_engagement_breakdown() -> (
             "details": str(e),
         }
     return engagement_breakdown
+
+@app.get("/tweets", response_model=List[TweetResponse])
+async def get_tweets_by_users(username: str) -> List[TweetResponse]:
+    """
+    Endpoint to get a list of tweets by user!
+    """
+    if not username or username == "":
+        raise HTTPException(status_code=400, detail="username should NOT be empty")
+
+    tweets_collection: AsyncCollection = app.state.tweets
+    try:
+        tweets = await get_tweets_by_screen_name(
+            username,
+            tweets_collection=tweets_collection,
+        )
+    except Exception as e:
+        print(f"Error occurred while getting tweets: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        ) from e
+
+    return tweets

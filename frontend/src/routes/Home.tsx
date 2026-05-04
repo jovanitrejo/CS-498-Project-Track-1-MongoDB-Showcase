@@ -42,7 +42,7 @@ const Home = (): React.JSX.Element => {
               <Card.Text>View tweets by a specific user.</Card.Text>
 
               <Link
-                to="/tweets-by-user"
+                to="/tweets"
                 className="mt-auto text-decoration-none"
               >
                 <Button variant="outline-primary" className="w-100">

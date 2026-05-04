@@ -1,6 +1,8 @@
 from pymongo.asynchronous.collection import AsyncCollection
+from datetime import datetime
 from typing import List
-from models.rest_response_models import TopCountryResponse, UserTweetCountsResponse, TopHashtagsResponse, EngagementBreakdownResponse
+from models.mongodb_models import Tweet
+from models.rest_response_models import TopCountryResponse, TweetResponse, UserTweetCountsResponse, TopHashtagsResponse, EngagementBreakdownResponse, TweetResponse
 
 async def query_top_countries(tweets_collection: AsyncCollection) -> List[TopCountryResponse]:
     """
@@ -162,3 +164,44 @@ async def query_engagement_breakdown(tweets_collection: AsyncCollection) -> List
         raise e
     
     return engagement_breakdown
+
+async def get_tweets_by_screen_name(username: str, tweets_collection: AsyncCollection) -> List[TweetResponse]:
+
+    def parse_created_at(created_at: object) -> datetime:
+        if isinstance(created_at, datetime):
+            return created_at
+        if isinstance(created_at, str):
+            return datetime.strptime(created_at, "%a %b %d %H:%M:%S %z %Y")
+        raise ValueError(f"Unsupported created_at value: {created_at!r}")
+
+    query: dict[str, dict] = {
+        "user.screen_name": {"$regex": f"^{username}$", "$options": "i"}
+    }
+    
+    try:
+        response = tweets_collection.find(query)
+        tweets = []
+        async for doc in response:
+            user = doc.get("user") or {}
+            metrics = doc.get("metrics") or {}
+            tweets.append(
+                TweetResponse(
+                    id=doc.get("id", 0),
+                    screen_name=user.get("screen_name", ""),
+                    verified=bool(user.get("verified", False)),
+                    created_at=parse_created_at(doc.get("created_at")),
+                    text=doc.get("text", ""),
+                    likes=int(metrics.get("likes", 0)),
+                    retweets=int(metrics.get("retweets", 0)),
+                    quotes=int(metrics.get("quotes", 0)),
+                    favorites=int(metrics.get("favorites", 0)),
+                )
+            )
+    except KeyError as e:
+        raise ValueError(
+            f"Tweet document for user '{username}' is missing expected field: {e.args[0]}"
+        ) from e
+    except Exception as e:
+        print(f"Error occurred while querying tweet query: {e}")
+        raise e
+    return tweets

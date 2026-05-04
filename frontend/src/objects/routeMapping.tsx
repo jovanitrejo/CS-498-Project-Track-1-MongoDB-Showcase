@@ -4,6 +4,7 @@ import MostActiveUsers from '../routes/MostActiveUsers';
 import Home from "../routes/Home";
 import TopCountries from "../routes/TopCountries";
 import TopHashtags from "../routes/TopHashtags";
+import Tweets from "../routes/Tweets";
 
 /**
  * This file contains a RouteProp[] object which will be used to map to the 
@@ -29,5 +30,9 @@ export default [
     {
         path: "/top-hashtags",
         element: <TopHashtags />
+    },
+    {
+        path: "/tweets",
+        element: <Tweets />
     }
 ] as RouteProps[]

@@ -3,6 +3,7 @@ import type EngagementBreakdownResponse from "../models/engagementBreakdown";
 import type ActiveUserResponse from "../models/activeUserResponse";
 import type Hashtag from "../models/topHashtags";
 import type TopCountry from "../models/topCountry";
+import type TweetResponse from "../models/tweetResponse";
 
 /**
  * Contacts the backend API to retrieve the engagement breakdown for verified users. This function makes a GET request to the `/engagement-breakdown` endpoint and returns the data as an array of EngagementBreakdownResponse objects.
@@ -65,3 +66,15 @@ export const getTopHashtags = async (): Promise<Hashtag[]> => {
     throw error;
   }
 };
+
+export const getTweetsByUsername = async (username: string): Promise<TweetResponse[]> => {
+  try {
+    const response: AxiosResponse<TweetResponse[]> = await axios.get("/tweets", {
+      params: { username }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tweets by username!", { cause: error });
+    throw error;
+  }
+}
