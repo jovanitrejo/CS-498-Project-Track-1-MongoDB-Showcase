@@ -2,7 +2,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Home from "./routes/Home";
+import routeMapping from "./objects/routeMapping";
 
 const App = (): React.JSX.Element => {
   return (
@@ -11,7 +11,9 @@ const App = (): React.JSX.Element => {
         <Navbar />
         <main className="app-content">
           <Routes>
-            <Route path="/" element={<Home />} />
+            {routeMapping.map((route) => (
+              <Route path={route.path} element={route.element}/>
+            ))}
           </Routes>
         </main>
         <Footer />
