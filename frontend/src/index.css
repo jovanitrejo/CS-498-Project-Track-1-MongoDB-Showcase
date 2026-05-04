@@ -9,3 +9,15 @@
     display: flex;
     flex-direction: column;
 }
+
+.loading-spinner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-spinner p {
+    margin: 0;
+}
