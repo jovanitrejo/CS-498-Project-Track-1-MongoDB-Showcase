@@ -1,6 +1,6 @@
 import os
 from typing import Any, List
-
+from app.config import get_mongo_uri
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import asynccontextmanager
@@ -28,7 +28,8 @@ from queries.queries import (
 load_dotenv()  # load environment variables from .env file
 
 origins = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://vite-frontend-vpjuo4mhvq-uc.a.run.app",
 ]
 
 @asynccontextmanager
@@ -36,7 +37,7 @@ async def db_lifespan(app: FastAPI):
     # Create a MongoDB client and connect to the database
     uri: str | None = os.getenv("MONGO_URI")
     if uri is None:
-        raise ValueError("MONGO_URI environment variable is not set")
+        uri = get_mongo_uri()
     mongo_client: AsyncMongoClient[dict[str, Any]] = AsyncMongoClient(uri)
     twitter: AsyncDatabase = mongo_client["twitter"]
     tweets: AsyncCollection = twitter["tweets"]
