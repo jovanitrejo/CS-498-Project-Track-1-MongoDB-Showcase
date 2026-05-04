@@ -7,6 +7,7 @@ from fastapi.concurrency import asynccontextmanager
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.asynchronous.database import AsyncDatabase
+from fastapi.middleware.cors import CORSMiddleware
 
 from models.rest_response_models import (
     EngagementBreakdownResponse,
@@ -23,6 +24,9 @@ from queries.queries import (
 
 load_dotenv()  # load environment variables from .env file
 
+origins = [
+    "http://localhost:5173"
+]
 
 @asynccontextmanager
 async def db_lifespan(app: FastAPI):
@@ -45,6 +49,13 @@ async def db_lifespan(app: FastAPI):
 
 app: FastAPI = FastAPI(lifespan=db_lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Simple root endpoint for a heartbeat check
 @app.get("/", response_model=dict[str, str])
