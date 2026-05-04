@@ -5,5 +5,5 @@
  */
 export default interface TopCountry {
   country: string;
-  tweet_count: number;
+  count: number;
 }
